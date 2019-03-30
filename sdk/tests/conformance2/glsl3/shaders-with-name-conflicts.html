@@ -39,28 +39,12 @@
 <body>
 <div id="description"></div>
 <div id="console"></div>
-<script id="vertexShaderUniform1" type="text/something-not-javascript">#version 300 es
+<script id="vertexShaderUniform" type="text/something-not-javascript">#version 300 es
 uniform highp vec4 foo;
 
 void main()
 {
     gl_Position = foo;
-}
-</script>
-<script id="vertexShaderUniform2" type="text/something-not-javascript">#version 300 es
-uniform highp vec4 bar;
-
-void main()
-{
-    gl_Position = bar;
-}
-</script>
-<script id="vertexShaderUniform3" type="text/something-not-javascript">#version 300 es
-uniform highp vec4 baz;
-
-void main()
-{
-    gl_Position = baz;
 }
 </script>
 <script id="vertexShaderUniformBlock" type="text/something-not-javascript">#version 300 es
@@ -73,6 +57,16 @@ void main()
     gl_Position = bar;
 }
 </script>
+<script id="vertexShaderUniformBlockMember" type="text/something-not-javascript">#version 300 es
+uniform bar {
+    highp vec4 foo;
+};
+
+void main()
+{
+    gl_Position = foo;
+}
+</script>
 <script id="vertexShaderInstancedUniformBlock" type="text/something-not-javascript">#version 300 es
 uniform foo {
     highp vec4 bar;
@@ -83,31 +77,33 @@ void main()
     gl_Position = baz.bar;
 }
 </script>
-<script id="fragmentShaderUniform1" type="text/something-not-javascript">#version 300 es
+<script id="vertexShaderInstancedUniformBlockMember" type="text/something-not-javascript">#version 300 es
+uniform bar {
+    highp vec4 foo;
+} baz;
+
+void main()
+{
+    gl_Position = baz.foo;
+}
+</script>
+<script id="vertexShaderInstancedUniformBlockInstance" type="text/something-not-javascript">#version 300 es
+uniform bar {
+    highp vec4 baz;
+} foo;
+
+void main()
+{
+    gl_Position = foo.baz;
+}
+</script>
+<script id="fragmentShaderUniform" type="text/something-not-javascript">#version 300 es
 uniform highp vec4 foo;
 
 out highp vec4 out_FragColor;
 void main()
 {
     out_FragColor = foo;
-}
-</script>
-<script id="fragmentShaderUniform2" type="text/something-not-javascript">#version 300 es
-uniform highp vec4 bar;
-
-out highp vec4 out_FragColor;
-void main()
-{
-    out_FragColor = bar;
-}
-</script>
-<script id="fragmentShaderUniform3" type="text/something-not-javascript">#version 300 es
-uniform highp vec4 baz;
-
-out highp vec4 out_FragColor;
-void main()
-{
-    out_FragColor = baz;
 }
 </script>
 <script id="fragmentShaderUniformBlock" type="text/something-not-javascript">#version 300 es
@@ -121,6 +117,17 @@ void main()
     out_FragColor = bar;
 }
 </script>
+<script id="fragmentShaderUniformBlockMember" type="text/something-not-javascript">#version 300 es
+uniform bar {
+    highp vec4 foo;
+};
+
+out highp vec4 out_FragColor;
+void main()
+{
+    out_FragColor = foo;
+}
+</script>
 <script id="fragmentShaderInstancedUniformBlock" type="text/something-not-javascript">#version 300 es
 uniform foo {
     highp vec4 bar;
@@ -130,6 +137,28 @@ out highp vec4 out_FragColor;
 void main()
 {
     out_FragColor = baz.bar;
+}
+</script>
+<script id="fragmentShaderInstancedUniformBlockMember" type="text/something-not-javascript">#version 300 es
+uniform bar {
+    highp vec4 foo;
+} baz;
+
+out highp vec4 out_FragColor;
+void main()
+{
+    out_FragColor = baz.foo;
+}
+</script>
+<script id="fragmentShaderInstancedUniformBlockInstance" type="text/something-not-javascript">#version 300 es
+uniform bar {
+    highp vec4 baz;
+} foo;
+
+out highp vec4 out_FragColor;
+void main()
+{
+    out_FragColor = foo.baz;
 }
 </script>
 <script>
@@ -165,70 +194,70 @@ outside the block.
 var cases = [
     { vShaderId: 'vertexShaderUniformBlock',
       vShaderSuccess: true,
-      fShaderId: 'fragmentShaderUniform1',
+      fShaderId: 'fragmentShaderUniform',
       fShaderSuccess: true,
       linkSuccess: false,
       passMsg: 'shaders with conflicting uniform/uniform block names should fail'
     },
-    { vShaderId: 'vertexShaderUniformBlock',
+    { vShaderId: 'vertexShaderUniformBlockMember',
       vShaderSuccess: true,
-      fShaderId: 'fragmentShaderUniform2',
+      fShaderId: 'fragmentShaderUniform',
       fShaderSuccess: true,
       linkSuccess: false,
       passMsg: 'shaders with conflicting uniform/uniform block member names should fail'
     },
     { vShaderId: 'vertexShaderInstancedUniformBlock',
       vShaderSuccess: true,
-      fShaderId: 'fragmentShaderUniform1',
+      fShaderId: 'fragmentShaderUniform',
       fShaderSuccess: true,
       linkSuccess: false,
       passMsg: 'shaders with conflicting uniform/uniform block names should fail'
     },
-    { vShaderId: 'vertexShaderInstancedUniformBlock',
+    { vShaderId: 'vertexShaderInstancedUniformBlockMember',
       vShaderSuccess: true,
-      fShaderId: 'fragmentShaderUniform2',
+      fShaderId: 'fragmentShaderUniform',
       fShaderSuccess: true,
       linkSuccess: true,
       passMsg: 'shaders with not conflicting uniform/uniform block member names should succeed'
     },
-    { vShaderId: 'vertexShaderInstancedUniformBlock',
+    { vShaderId: 'vertexShaderInstancedUniformBlockInstance',
       vShaderSuccess: true,
-      fShaderId: 'fragmentShaderUniform3',
+      fShaderId: 'fragmentShaderUniform',
       fShaderSuccess: true,
       linkSuccess: false,
       passMsg: 'shaders with conflicting uniform/uniform block instance names should fail'
     },
-    { vShaderId: 'vertexShaderUniform1',
+    { vShaderId: 'vertexShaderUniform',
       vShaderSuccess: true,
       fShaderId: 'fragmentShaderUniformBlock',
       fShaderSuccess: true,
       linkSuccess: false,
       passMsg: 'shaders with conflicting uniform/uniform block names should fail'
     },
-    { vShaderId: 'vertexShaderUniform2',
+    { vShaderId: 'vertexShaderUniform',
       vShaderSuccess: true,
-      fShaderId: 'fragmentShaderUniformBlock',
+      fShaderId: 'fragmentShaderUniformBlockMember',
       fShaderSuccess: true,
       linkSuccess: false,
       passMsg: 'shaders with conflicting uniform/uniform block member names should fail'
     },
-    { vShaderId: 'vertexShaderUniform1',
+    { vShaderId: 'vertexShaderUniform',
       vShaderSuccess: true,
       fShaderId: 'fragmentShaderInstancedUniformBlock',
       fShaderSuccess: true,
       linkSuccess: false,
       passMsg: 'shaders with conflicting uniform/uniform block names should fail'
     },
-    { vShaderId: 'vertexShaderUniform2',
+    { vShaderId: 'vertexShaderUniform',
       vShaderSuccess: true,
-      fShaderId: 'fragmentShaderInstancedUniformBlock',
+      fShaderId: 'fragmentShaderInstancedUniformBlockMember',
       fShaderSuccess: true,
       linkSuccess: true,
       passMsg: 'shaders with not conflicting uniform/uniform block member names should succeed'
     },
-    { vShaderId: 'vertexShaderUniform3',
+    { vShaderId: 'vertexShaderUniform',
       vShaderSuccess: true,
-      fShaderId: 'fragmentShaderInstancedUniformBlock',
+      fShaderId: 'fragmentShaderInstancedUniformBlockInstance',
       fShaderSuccess: true,
       linkSuccess: false,
       passMsg: 'shaders with conflicting uniform/uniform block instance names should fail'
